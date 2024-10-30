@@ -42,13 +42,11 @@ exports.getFullData = async (event) => {
             }
         );
         const dataPhone = await phoneRes.json();
-        if (dataPhone.status != 200) {
-            throw new Error(`${dataPhone.detail}`);
-        }
+        fullData.phone = dataPhone.number ? dataPhone.number : '';
 
         return {
             statusCode: 200,
-            body: JSON.stringify(dataPhone)
+            body: JSON.stringify(fullData)
         }
     } catch (error) {
         console.error(error);
