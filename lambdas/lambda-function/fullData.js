@@ -3,16 +3,17 @@ exports.getFullData = async (event) => {
 
     const id = event.pathParameters.contactId;
     const baseURL = `https://imaginecx--tst2.custhelp.com/services/rest/connect/v1.3/contacts/${id}/`;
+    const baseConfig = {
+        'Authorization': 'Basic ' + Buffer.from('ICXCandidate:Welcome2024').toString('base64'),
+        'Content-Type': 'application/json'
+    }
     const fullData = {};
 
     try {
         const response = await fetch(
             `${baseURL}`,
             {
-                headers: {
-                    'Authorization': 'Basic ' + Buffer.from('ICXCandidate:Welcome2024').toString('base64'),
-                    'Content-Type': 'application/json'
-                }
+                headers: baseConfig
             }
         );
         const data = await response.json();
@@ -23,10 +24,7 @@ exports.getFullData = async (event) => {
         const emailRes = await fetch(
             `${baseURL}emails/0`,
             {
-                headers: {
-                    'Authorization': 'Basic ' + Buffer.from('ICXCandidate:Welcome2024').toString('base64'),
-                    'Content-Type': 'application/json'
-                }
+                headers: baseConfig
             }
         );
         const dataEmail = await emailRes.json();
@@ -35,10 +33,7 @@ exports.getFullData = async (event) => {
         const phoneRes = await fetch(
             `${baseURL}phones/1`,
             {
-                headers: {
-                    'Authorization': 'Basic ' + Buffer.from('ICXCandidate:Welcome2024').toString('base64'),
-                    'Content-Type': 'application/json'
-                }
+                headers: baseConfig
             }
         );
         const dataPhone = await phoneRes.json();
@@ -52,7 +47,7 @@ exports.getFullData = async (event) => {
         console.error(error);
         return {
             statusCode: 400,
-            body: 'Ocurrió un error: ' + JSON.stringify(error)
+            body: 'Ocurrió un error: ' + error
         }
     }
 };
