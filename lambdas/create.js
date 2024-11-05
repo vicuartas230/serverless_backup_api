@@ -1,24 +1,6 @@
 exports.createContact = async (event) => {
     const fetch = (await import('node-fetch')).default;
 
-    const reqData = JSON.parse(event.body);
-
-    const postData = {
-        name: {
-            first: reqData.firstName,
-            last: reqData.lastName
-        },
-        // emails: {
-        //     address: reqData.email
-        // },
-        address: {
-            city: reqData.city
-        },
-        // phones: {
-        //     number: reqData.phone
-        // }
-    };
-
     try {
         const req = await fetch(
             "https://imaginecx--tst2.custhelp.com/services/rest/connect/v1.3/contacts",
@@ -28,7 +10,7 @@ exports.createContact = async (event) => {
                     'Content-Type': 'application/json'
                 },
                 method: 'POST',
-                body: JSON.stringify(postData)
+                body: event.body
             }
         );
         const res = await req.json();
@@ -36,14 +18,21 @@ exports.createContact = async (event) => {
             statusCode: 201,
             headers: {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Headers": "Content-Type"
             },
             body: JSON.stringify(res)
         }
     } catch (err) {
         console.error("Error: ", err.message);
         return {
-            message: "Ocurrió un error: " + err
-        }
+            statusCode: 500,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Headers": "Content-Type"
+            },
+            body: JSON.stringify({ message: "Ocurrió un error: " + err })
+        };        
     }
 }

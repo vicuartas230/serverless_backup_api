@@ -2,16 +2,7 @@ exports.updateContact = async (event) => {
     const fetch = (await import('node-fetch')).default;
 
     const id = event.pathParameters.contactId;
-    const reqData = JSON.parse(event.body);
-    const patchData = {
-        name: {
-            first: reqData.firstName,
-            last: reqData.lastName
-        },
-        address: {
-            city: reqData.city
-        }
-    };
+    let res;
 
     try {
         const req = await fetch(
@@ -22,23 +13,34 @@ exports.updateContact = async (event) => {
                     'Content-Type': 'application/json'
                 },
                 method: 'PATCH',
-                body: JSON.stringify(patchData)
+                body: event.body
             }
         );
-        const res = await req.json();
+        const contentType = req.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            res = await req.json();
+        } else {
+            res = await req.text();
+        }
         return {
             statusCode: 200,
             headers: {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Headers": "Content-Type"
             },
             body: JSON.stringify(res)
         };
     } catch (err) {
-        console.error('Error: ', + err.message);
+        console.error('Error: ', err);
         return {
-            statusCode: 400,
-            body: 'Ocurrió un error: ' + err.message
-        };
+            statusCode: 500,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Headers": "Content-Type"
+            },
+            body: JSON.stringify({ message: "Ocurrió un error: " + err.message })
+        };        
     }
 };
